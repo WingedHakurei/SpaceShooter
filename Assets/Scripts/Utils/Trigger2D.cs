@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UnityUtils
+namespace Utils
 {
     public class Trigger2D : MonoBehaviour
     {

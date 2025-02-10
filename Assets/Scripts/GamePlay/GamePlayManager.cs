@@ -1,22 +1,28 @@
-﻿using GamePlay.Configs;
+﻿using System;
+using GamePlay.Configs;
 using GamePlay.Controllers;
 using GamePlay.Entities;
 using UnityEngine;
+using Utils;
 
 namespace GamePlay
 {
     public class GamePlayManager : MonoBehaviour
     {
+        private Pool _pool;
         private GamePlayConfigs _configs;
         private GamePlayEntities _entities;
         [SerializeField, Range(0, GamePlayConfigs.MaxGameSpeed)] 
         private int _debugGameSpeed = GamePlayConfigs.MaxGameSpeed;
-        [SerializeField] private GameObject _debugPrefab;
+        [SerializeField] private string[] _debugPrefabNames;
+        [SerializeField] private GameObject[] _debugPrefabs;
         [SerializeField] private Transform _debugStartPosition;
         private PlayerController _debugPlayer;
 
         private void Start()
         {
+            _pool = new Pool(_debugPrefabNames, _debugPrefabs);
+            
             #region debug game play configs
             _configs = new GamePlayConfigs
             {
@@ -46,6 +52,7 @@ namespace GamePlay
             {
                 new()
                 {
+                    name = "DefaultFighter",
                     speed = 5f,
                     hp = 100,
                     weapons = new[] { _configs.weapons[0] }
@@ -65,7 +72,8 @@ namespace GamePlay
             };
             fighter.cds = new float[fighter.config.weapons.Length];
             fighter.curHp = fighter.config.hp;
-            fighter.Target = Instantiate(_debugPrefab);
+            fighter.Target = _pool.Get(fighter.config.name);
+            fighter.Target.SetActive(true);
             fighter.Target.transform.position = _debugStartPosition.position;
             _entities.fighters[fighter.id] = fighter;
             #endregion
@@ -84,6 +92,11 @@ namespace GamePlay
             {
                 fighter.Update(delta);
             }
+        }
+
+        private void OnDestroy()
+        {
+            _pool.Dispose();
         }
     }
 }

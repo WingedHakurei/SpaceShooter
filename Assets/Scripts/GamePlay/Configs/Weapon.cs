@@ -2,6 +2,7 @@
 {
     public class Weapon
     {
+        public string name;
         public Bullet bullet;
         public int count;
         public Shape shape;
