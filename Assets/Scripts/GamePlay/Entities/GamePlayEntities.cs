@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GamePlay.Entities
 {
     public class GamePlayEntities
     {
-        public Dictionary<int, FighterEntity> fighters = new();
-        public Dictionary<int, BulletEntity> bullets = new();
+        public Dictionary<Guid, FighterEntity> fighters = FighterEntity.All;
+        public Dictionary<Guid, BulletEntity> bullets = BulletEntity.All;
     }
 }

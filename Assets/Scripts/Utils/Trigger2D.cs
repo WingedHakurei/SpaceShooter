@@ -5,6 +5,7 @@ namespace Utils
 {
     public class Trigger2D : MonoBehaviour
     {
+        public Guid guid;
         public event Action<Collider2D> OnTriggerEnter2DHandler;
         public event Action<Collider2D> OnTriggerExit2DHandler;
 

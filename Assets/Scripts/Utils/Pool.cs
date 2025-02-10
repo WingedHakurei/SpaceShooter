@@ -7,6 +7,7 @@ namespace Utils
 {
     public class Pool : IDisposable
     {
+        public static Pool Instance;
         private readonly Dictionary<string, SinglePool> _pools = new();
         private readonly Stack<GameObject> _fallback = new();
 
@@ -19,7 +20,17 @@ namespace Utils
             }
         }
 
-        public GameObject Get(string key)
+        public static GameObject Get(string key)
+        {
+            if (Instance == null)
+            {
+                throw new NullReferenceException("The pool object is null.");
+            }
+
+            return Instance.InstanceGet(key);
+        }
+
+        private GameObject InstanceGet(string key)
         {
             if (_pools.TryGetValue(key, out var pool))
             {
@@ -39,7 +50,17 @@ namespace Utils
             return obj;
         }
 
-        public void Collect(string key, GameObject obj)
+        public static void Collect(string key, GameObject obj)
+        {
+            if (Instance == null)
+            {
+                throw new NullReferenceException("The pool object is null.");
+            }
+
+            Instance.InstanceCollect(key, obj);
+        }
+        
+        private void InstanceCollect(string key, GameObject obj)
         {
             if (_pools.TryGetValue(key, out var pool))
             {
@@ -66,6 +87,8 @@ namespace Utils
             {
                 pool.Dispose();
             }
+            
+            Instance = null;
         }
 
         private class SinglePool : IDisposable
