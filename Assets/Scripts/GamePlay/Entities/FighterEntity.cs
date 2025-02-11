@@ -8,7 +8,9 @@ namespace GamePlay.Entities
 {
     public class FighterEntity
     {
-        public static Dictionary<Guid, FighterEntity> All { get; private set; } = new();
+        public static event Action<Guid, FighterEntity> OnInitialized;
+        public static event Action<Guid> OnDestroy;
+        
         private GameObject _fighterObject;
         public Fighter config;
         public Guid guid;
@@ -24,7 +26,7 @@ namespace GamePlay.Entities
             _fighterObject.transform.position = position;
             _fighterObject.GetComponent<Trigger2D>().guid = guid;
             _fighterObject.SetActive(true);
-            All[guid] = this;
+            OnInitialized?.Invoke(guid, this);
         }
 
         public void Update(float delta)
@@ -125,14 +127,14 @@ namespace GamePlay.Entities
             }
 
             curHp = 0;
-            SelfDestroy();
+            Destroy();
         }
         
-        private void SelfDestroy()
+        private void Destroy()
         {
-            All.Remove(guid);
             Pool.Collect(config.name, _fighterObject);
             _fighterObject = null;
+            OnDestroy?.Invoke(guid);
         }
     }
 }

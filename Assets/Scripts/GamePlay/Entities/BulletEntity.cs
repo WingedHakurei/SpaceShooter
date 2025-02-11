@@ -8,7 +8,11 @@ namespace GamePlay.Entities
 {
     public class BulletEntity
     {
-        public static Dictionary<Guid, BulletEntity> All { get; } = new();
+        public static event Action<Guid, BulletEntity> OnInitialized;
+        public static event Action<Guid> OnDestroy;
+        public delegate bool QueryFighterDelegate(Guid guid, out FighterEntity fighter);
+        public static QueryFighterDelegate QueryFighter;
+        
         private GameObject _bulletObject;
         private Trigger2D _trigger;
         public Bullet config;
@@ -25,7 +29,7 @@ namespace GamePlay.Entities
             _trigger.guid = guid;
             _trigger.OnTriggerEnter2DHandler += OnTriggerEnter2D;
             _bulletObject.SetActive(true);
-            All[guid] = this;
+            OnInitialized?.Invoke(guid, this);
         }
 
         public void Update(float delta)
@@ -43,7 +47,7 @@ namespace GamePlay.Entities
                 return;
             }
 
-            if (!FighterEntity.All.TryGetValue(trigger.guid, out var fighter))
+            if (!QueryFighter.Invoke(trigger.guid, out var fighter))
             {
                 return;
             }
@@ -61,9 +65,9 @@ namespace GamePlay.Entities
         {
             _trigger.OnTriggerEnter2DHandler -= OnTriggerEnter2D;
             _trigger = null;
-            All.Remove(guid);
             Pool.Collect(config.name, _bulletObject);
             _bulletObject = null;
+            OnDestroy?.Invoke(guid);
         }
 
     }

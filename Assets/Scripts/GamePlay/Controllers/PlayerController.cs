@@ -1,6 +1,9 @@
-﻿using GamePlay.Entities;
+﻿using System;
+using GamePlay.Configs;
+using GamePlay.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Utils;
 
 namespace GamePlay.Controllers
 {
@@ -11,9 +14,24 @@ namespace GamePlay.Controllers
         private readonly InputAction _slowAction;
         private readonly InputAction _attackAction;
 
-        public PlayerController(FighterEntity fighter)
+        public Guid guid;
+        public bool isControllable = true;
+
+        public PlayerController(Fighter config, Vector2 position)
         {
-            _fighter = fighter;
+            guid = Guid.NewGuid();
+            _fighter = new FighterEntity
+            {
+                config = config,
+                team = 1,
+                guid = guid,
+                position = position,
+                targetPosition = position,
+                curHp = config.hp,
+                cds = new float[config.weapons.Length]
+            };
+            _fighter.Init(Pool.Get(config.name));
+            
             _moveAction = InputSystem.actions["Move"];
             _slowAction = InputSystem.actions["Slow"];
             _attackAction = InputSystem.actions["Attack"];
@@ -21,6 +39,10 @@ namespace GamePlay.Controllers
 
         public void Update(float delta)
         {
+            if (!isControllable)
+            {
+                return;
+            }
             var move = _moveAction.ReadValue<Vector2>();
             var slow = _slowAction.ReadValue<float>() > 0f;
             var attack = _attackAction.ReadValue<float>() > 0f;

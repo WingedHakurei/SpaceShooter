@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using GamePlay.Configs;
 using GamePlay.Controllers;
 using GamePlay.Entities;
@@ -8,7 +7,7 @@ using Utils;
 
 namespace GamePlay
 {
-    // TODO: Enemy Controller & Controller Management
+    // TODO: Controller Destroy
     // TODO: Wave Config & Enemy Spawn
     // TODO: xLua Game Config
     // TODO: Save & Load
@@ -17,13 +16,12 @@ namespace GamePlay
     {
         private GamePlayConfigs _configs;
         private GamePlayEntities _entities;
+        private GamePlayControllers _controllers;
         [SerializeField, Range(0, GamePlayConfigs.MaxGameSpeed)] 
         private int _debugGameSpeed;
         [SerializeField] private string[] _debugPrefabNames;
         [SerializeField] private GameObject[] _debugPrefabs;
         [SerializeField] private Transform _debugStartPosition;
-        [SerializeField] private Transform _debugEnemyPosition;
-        private PlayerController _debugPlayer;
 
         private void Start()
         {
@@ -94,34 +92,11 @@ namespace GamePlay
             };
             #endregion
             
-            #region debug game play entities
             _entities = new GamePlayEntities();
-            var fighter = new FighterEntity
-            {
-                config = _configs.fighters.First(f => f.name == "DefaultFighter"),
-                team = 1,
-                guid = Guid.NewGuid(),
-                position = _debugStartPosition.position,
-                targetPosition = _debugStartPosition.position,
-            };
-            fighter.cds = new float[fighter.config.weapons.Length];
-            fighter.curHp = fighter.config.hp;
-            fighter.Init(Pool.Get(fighter.config.name));
+
+            var fighter = _configs.fighters.First(f => f.name == "DefaultFighter");
+            _controllers = new GamePlayControllers(fighter, _debugStartPosition.position);
             
-            var enemy = new FighterEntity
-            {
-                config = _configs.fighters.First(f => f.name == "DefaultFighter"),
-                team = 2,
-                guid = Guid.NewGuid(),
-                position = _debugEnemyPosition.position,
-                targetPosition = _debugEnemyPosition.position,
-            };
-            enemy.cds = new float[enemy.config.weapons.Length];
-            enemy.curHp = enemy.config.hp;
-            enemy.Init(Pool.Get(enemy.config.name));
-            #endregion
-            
-            _debugPlayer = new PlayerController(fighter);
         }
 
         private void Update()
@@ -130,7 +105,8 @@ namespace GamePlay
             var delta = Time.deltaTime * _configs.gameSpeed / GamePlayConfigs.MaxGameSpeed;
             _configs.gameTime += delta;
 
-            _debugPlayer.Update(delta);
+            _controllers.Update(delta);
+            
             foreach (var fighter in _entities.fighters.Values)
             {
                 fighter.Update(delta);
