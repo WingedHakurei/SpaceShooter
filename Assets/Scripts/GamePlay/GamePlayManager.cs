@@ -7,7 +7,6 @@ using Utils;
 
 namespace GamePlay
 {
-    // TODO: Controller Destroy
     // TODO: Wave Config & Enemy Spawn
     // TODO: xLua Game Config
     // TODO: Save & Load

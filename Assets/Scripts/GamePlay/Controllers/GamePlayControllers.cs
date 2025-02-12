@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GamePlay.Configs;
+using GamePlay.Entities;
 using UnityEngine;
 
 namespace GamePlay.Controllers
@@ -42,12 +43,25 @@ namespace GamePlay.Controllers
 
         public GamePlayControllers(Fighter debugFighter, Vector2 debugPosition)
         {
+            FighterEntity.OnDestroy += RemoveController;
             playerController = new PlayerController(debugFighter, debugPosition);
             EnemyController enemy;
             enemy = new EnemyController(debugFighter, debugBehaviors[0]);
             enemyControllers[enemy.guid] = enemy;
             enemy = new EnemyController(debugFighter, debugBehaviors[1]);
             enemyControllers[enemy.guid] = enemy;
+        }
+
+        private void RemoveController(Guid guid)
+        {
+            if (guid == playerController.guid)
+            {
+                playerController.isControllable = false;
+            }
+            else
+            {
+                enemyControllers.Remove(guid);
+            }
         }
 
         public void Update(float delta)
