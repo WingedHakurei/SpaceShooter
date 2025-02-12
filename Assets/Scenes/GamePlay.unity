@@ -776,8 +776,8 @@ MonoBehaviour:
   - DefaultFighter
   - DefaultBullet
   _debugPrefabs:
-  - {fileID: 3008808060506461541, guid: b90bdb236d9cf4945b803df4166d5141, type: 3}
-  - {fileID: 8308702457139132021, guid: f69d63cb370ba3d43bbd6502f9fabc14, type: 3}
+  - {fileID: 2345856856419617796, guid: b90bdb236d9cf4945b803df4166d5141, type: 3}
+  - {fileID: 4547201744845114121, guid: f69d63cb370ba3d43bbd6502f9fabc14, type: 3}
   _debugStartPosition: {fileID: 2089274124}
 --- !u!4 &1168377237
 Transform:

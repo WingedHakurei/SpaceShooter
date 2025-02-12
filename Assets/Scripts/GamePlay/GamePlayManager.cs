@@ -19,12 +19,12 @@ namespace GamePlay
         [SerializeField, Range(0, GamePlayConfigs.MaxGameSpeed)] 
         private int _debugGameSpeed;
         [SerializeField] private string[] _debugPrefabNames;
-        [SerializeField] private GameObject[] _debugPrefabs;
+        [SerializeField] private Trigger2D[] _debugPrefabs;
         [SerializeField] private Transform _debugStartPosition;
 
         private void Start()
         {
-            Pool.Instance = new Pool(_debugPrefabNames, _debugPrefabs);
+            Pool<Trigger2D>.Instance = new Pool<Trigger2D>(_debugPrefabNames, _debugPrefabs);
             
             #region debug game play configs
             _configs = new GamePlayConfigs
@@ -119,7 +119,7 @@ namespace GamePlay
 
         private void OnDestroy()
         {
-            Pool.Instance.Dispose();
+            Pool<Trigger2D>.Instance.Dispose();
         }
     }
 }

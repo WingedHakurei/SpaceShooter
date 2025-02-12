@@ -5,13 +5,12 @@ using Object = UnityEngine.Object;
 
 namespace Utils
 {
-    public class Pool : IDisposable
+    public class Pool<T> : IDisposable where T : Component
     {
-        public static Pool Instance;
+        public static Pool<T> Instance;
         private readonly Dictionary<string, SinglePool> _pools = new();
-        private readonly Stack<GameObject> _fallback = new();
 
-        public Pool(string[] names, GameObject[] prefabs)
+        public Pool(string[] names, T[] prefabs)
         {
             for (var i = 0; i < prefabs.Length; i++)
             {
@@ -20,7 +19,7 @@ namespace Utils
             }
         }
 
-        public static GameObject Get(string key)
+        public static T Get(string key)
         {
             if (Instance == null)
             {
@@ -30,27 +29,19 @@ namespace Utils
             return Instance.InstanceGet(key);
         }
 
-        private GameObject InstanceGet(string key)
+        private T InstanceGet(string key)
         {
             if (_pools.TryGetValue(key, out var pool))
             {
                 return pool.Get();
             }
-
-            GameObject obj;
-            if (_fallback.Count > 0)
-            {
-                obj = _fallback.Pop();
-            }
             else
             {
-                obj = new GameObject(key);
-                obj.SetActive(false);
+                throw new KeyNotFoundException("The key " + key + " was not found in the pool.");
             }
-            return obj;
         }
 
-        public static void Collect(string key, GameObject obj)
+        public static void Collect(string key, T obj)
         {
             if (Instance == null)
             {
@@ -60,7 +51,7 @@ namespace Utils
             Instance.InstanceCollect(key, obj);
         }
         
-        private void InstanceCollect(string key, GameObject obj)
+        private void InstanceCollect(string key, T obj)
         {
             if (_pools.TryGetValue(key, out var pool))
             {
@@ -68,21 +59,12 @@ namespace Utils
             }
             else
             {
-                _fallback.Push(obj);
+                throw new KeyNotFoundException("The key " + key + " was not found in the pool.");
             }
         }
 
         public void Dispose()
         {
-            while (_fallback.Count > 0)
-            {
-                var obj = _fallback.Pop();
-                if (obj)
-                {
-                    Object.Destroy(obj);
-                }
-            }
-
             foreach (var pool in _pools.Values)
             {
                 pool.Dispose();
@@ -93,10 +75,10 @@ namespace Utils
 
         private class SinglePool : IDisposable
         {
-            private GameObject _prefab;
-            private readonly Stack<GameObject> _container = new();
+            private T _prefab;
+            private readonly Stack<T> _container = new();
 
-            public SinglePool(GameObject prefab)
+            public SinglePool(T prefab)
             {
                 _prefab = prefab;
             }
@@ -114,9 +96,9 @@ namespace Utils
                 _prefab = null;
             }
 
-            public GameObject Get()
+            public T Get()
             {
-                GameObject obj;
+                T obj;
                 if (_container.Count > 0)
                 {
                     obj = _container.Pop();
@@ -124,14 +106,14 @@ namespace Utils
                 else
                 {
                     obj = Object.Instantiate(_prefab);
-                    obj.SetActive(false);
+                    obj.gameObject.SetActive(false);
                 }
                 return obj;
             }
 
-            public void Collect(GameObject obj)
+            public void Collect(T obj)
             {
-                obj.SetActive(false);
+                obj.gameObject.SetActive(false);
                 _container.Push(obj);
             }
         }

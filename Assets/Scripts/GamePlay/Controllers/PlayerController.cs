@@ -30,7 +30,7 @@ namespace GamePlay.Controllers
                 curHp = config.hp,
                 cds = new float[config.weapons.Length]
             };
-            _fighter.Init(Pool.Get(config.name));
+            _fighter.Init(Pool<Trigger2D>.Get(config.name));
             
             _moveAction = InputSystem.actions["Move"];
             _slowAction = InputSystem.actions["Slow"];

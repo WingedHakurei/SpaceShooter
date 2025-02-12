@@ -29,7 +29,7 @@ namespace GamePlay.Controllers
                 cds = new float[config.weapons.Length],
                 curHp = config.hp
             };
-            _fighter.Init(Pool.Get(config.name));
+            _fighter.Init(Pool<Trigger2D>.Get(config.name));
         }
 
         public void Update(float delta)

@@ -11,7 +11,7 @@ namespace GamePlay.Entities
         public static event Action<Guid, FighterEntity> OnInitialized;
         public static event Action<Guid> OnDestroy;
         
-        private GameObject _fighterObject;
+        private Trigger2D _fighterObject;
         public Fighter config;
         public Guid guid;
         public int team;
@@ -20,12 +20,12 @@ namespace GamePlay.Entities
         public float[] cds;
         public int curHp;
 
-        public void Init(GameObject fighterObject)
+        public void Init(Trigger2D fighterObject)
         {
             _fighterObject = fighterObject;
             _fighterObject.transform.position = position;
-            _fighterObject.GetComponent<Trigger2D>().guid = guid;
-            _fighterObject.SetActive(true);
+            _fighterObject.guid = guid;
+            _fighterObject.gameObject.SetActive(true);
             OnInitialized?.Invoke(guid, this);
         }
 
@@ -68,7 +68,7 @@ namespace GamePlay.Entities
                         position = position,
                         direction = direction,
                     };
-                    bulletEntity.Init(Pool.Get(weapon.bullet.name));
+                    bulletEntity.Init(Pool<Trigger2D>.Get(weapon.bullet.name));
                 }
                 else if (weapon.shape == Weapon.Shape.Parallel)
                 {
@@ -85,7 +85,7 @@ namespace GamePlay.Entities
                             position = bulletPosition,
                             direction = direction,
                         };
-                        bulletEntity.Init(Pool.Get(weapon.bullet.name));
+                        bulletEntity.Init(Pool<Trigger2D>.Get(weapon.bullet.name));
                     }
                 }
                 else
@@ -106,7 +106,7 @@ namespace GamePlay.Entities
                             position = position,
                             direction = Vector3.Slerp(startDirection, endDirection, j / (float)(weapon.count - 1)),
                         };
-                        bulletEntity.Init(Pool.Get(weapon.bullet.name));
+                        bulletEntity.Init(Pool<Trigger2D>.Get(weapon.bullet.name));
                     }
                 }
                 cds[i] = weapon.cd;
@@ -132,7 +132,7 @@ namespace GamePlay.Entities
         
         private void Destroy()
         {
-            Pool.Collect(config.name, _fighterObject);
+            Pool<Trigger2D>.Collect(config.name, _fighterObject);
             _fighterObject = null;
             OnDestroy?.Invoke(guid);
         }
