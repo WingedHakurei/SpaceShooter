@@ -7,7 +7,6 @@ using Utils;
 
 namespace GamePlay
 {
-    // TODO: Wave Config & Enemy Spawn
     // TODO: xLua Game Config
     // TODO: Save & Load
     // TODO: xLua Events
@@ -31,6 +30,7 @@ namespace GamePlay
             {
                 gameSpeed = 0,
                 gameTime = 0f,
+                playerPosition = _debugStartPosition.position,
                 bullets = new Bullet[]
                 {
                     new ()
@@ -38,6 +38,60 @@ namespace GamePlay
                         name = "DefaultBullet",
                         damage = 10, 
                         speed = 10f
+                    }
+                },
+                behaviors = new Behavior[]
+                {
+                    new ()
+                    {
+                        startPosition = new Vector2(-7f, 3.5f),
+                        commands = new Command[]
+                        {
+                            new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
+                            new() { type = CommandType.Move, position = new Vector2(7f, 3.5f) },
+                            new() { type = CommandType.Move, position = new Vector2(-7f, 3.5f) },
+                        },
+                        nexts = new [] { 1, 2, 0 },
+                        intervals = new [] { 0f, 0f, 0f }
+                    },
+                    new ()
+                    {
+                        startPosition = new Vector2(-7f, -3.5f),
+                        commands = new Command[]
+                        {
+                            new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
+                            new() { type = CommandType.Move, position = new Vector2(7f, -3.5f) },
+                            new() { type = CommandType.Move, position = new Vector2(-7f, -3.5f) },
+                        },
+                        nexts = new [] { 1, 2, 0 },
+                        intervals = new [] { 0f, 0f, 0f }
+                    },
+                    new ()
+                    {
+                        startPosition = new Vector2(-7f, 3.5f),
+                        commands = new Command[]
+                        {
+                            new() { type = CommandType.None },
+                            new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
+                            new() { type = CommandType.Attack },
+                            new() { type = CommandType.Attack },
+                            new() { type = CommandType.Move, position = new Vector2(70f, 35f) },
+                        },
+                        nexts = new [] { 1, 2, 3, 4, -1 },
+                        intervals = new [] { 1f, 0f, 2f, 1f, 0f }
+                    },
+                    new ()
+                    {
+                        startPosition = new Vector2(0f, 3.5f),
+                        commands = new Command[]
+                        {
+                            new() { type = CommandType.Move, position = new Vector2(0f, -3.5f) },
+                            new() { type = CommandType.Attack },
+                            new() { type = CommandType.Move, position = new Vector2(0f, 3.5f) },
+                            new() { type = CommandType.Attack },
+                        },
+                        nexts = new [] { 1, 2, 3, 0 },
+                        intervals = new [] { 0f, 0f, 0f, 0f }
                     }
                 }
             };
@@ -89,12 +143,39 @@ namespace GamePlay
                     }
                 }
             };
+            _configs.waves = new Wave[]
+            {
+                new()
+                {
+                    fighters = new[] { _configs.fighters[0], _configs.fighters[0], _configs.fighters[0] },
+                    behaviors = new[] { _configs.behaviors[0], _configs.behaviors[1], _configs.behaviors[2] },
+                    intervals = new[] { 0f, 1f, 0f }
+                },
+                new()
+                {
+                    fighters = new[] { _configs.fighters[0], _configs.fighters[0] },
+                    behaviors = new[] { _configs.behaviors[2], _configs.behaviors[3] },
+                    intervals = new[] { 1f, 0f }
+                }
+            };
+            _configs.stages = new Stage[]
+            {
+                new()
+                {
+                    waves = new[] { _configs.waves[0] },
+                    intervals = new[] { 0f }
+                },
+                new()
+                {
+                    waves = new[] { _configs.waves[0], _configs.waves[1] },
+                    intervals = new[] { 5f, 0f }
+                }
+            };
+            _configs.player = _configs.fighters[0];
             #endregion
             
             _entities = new GamePlayEntities();
-
-            var fighter = _configs.fighters.First(f => f.name == "DefaultFighter");
-            _controllers = new GamePlayControllers(fighter, _debugStartPosition.position);
+            _controllers = new GamePlayControllers(_configs);
             
         }
 

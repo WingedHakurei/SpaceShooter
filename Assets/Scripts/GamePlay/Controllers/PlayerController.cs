@@ -20,9 +20,8 @@ namespace GamePlay.Controllers
         public PlayerController(Fighter config, Vector2 position)
         {
             guid = Guid.NewGuid();
-            _fighter = new FighterEntity
+            _fighter = new FighterEntity(config)
             {
-                config = config,
                 team = 1,
                 guid = guid,
                 position = position,
@@ -48,8 +47,7 @@ namespace GamePlay.Controllers
             var attack = _attackAction.ReadValue<float>() > 0f;
             if (move != Vector2.zero)
             {
-                _fighter.targetPosition = _fighter.position + 
-                                          _fighter.config.speed * delta * (slow ? 0.5f : 1f) * move;
+                _fighter.MoveDirection(delta * (slow ? 0.5f : 1f) * move);
             }
 
             if (attack)

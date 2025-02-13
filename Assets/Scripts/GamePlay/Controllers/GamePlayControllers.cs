@@ -10,58 +10,21 @@ namespace GamePlay.Controllers
     {
         public readonly PlayerController playerController;
         public readonly Dictionary<Guid, EnemyController> enemyControllers = new();
-        public readonly Behavior[] debugBehaviors = new Behavior[]
-        {
-            new ()
-            {
-                startPosition = new Vector2(-7f, 3.5f),
-                commands = new Command[]
-                {
-                    new() { type = CommandType.None },
-                    new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
-                    new() { type = CommandType.Attack },
-                    new() { type = CommandType.Attack },
-                    new() { type = CommandType.Move, position = new Vector2(7f, 3.5f) },
-                },
-                nextIndices = new [] { 1, 2, 3, 4, -1 },
-                intervals = new [] { 1f, 0f, 2f, 1f, 0f }
-            },
-            new ()
-            {
-                startPosition = new Vector2(0f, 3.5f),
-                commands = new Command[]
-                {
-                    new() { type = CommandType.Move, position = new Vector2(0f, -3.5f) },
-                    new() { type = CommandType.Attack },
-                    new() { type = CommandType.Move, position = new Vector2(0f, 3.5f) },
-                    new() { type = CommandType.Attack },
-                },
-                nextIndices = new [] { 1, 2, 3, 0 },
-                intervals = new [] { 0f, 0f, 0f, 0f }
-            }
-        };
+        private readonly Stage[] _stages;
+        public int currentStage;
+        public int currentWave;
+        public int currentEnemy;
+        public float waveCd;
+        public float enemyCd;
+        public int remainingEnemies;
+        public SpawnState spawnState;
 
-        public GamePlayControllers(Fighter debugFighter, Vector2 debugPosition)
+        public GamePlayControllers(GamePlayConfigs configs)
         {
-            FighterEntity.OnDestroy += RemoveController;
-            playerController = new PlayerController(debugFighter, debugPosition);
-            EnemyController enemy;
-            enemy = new EnemyController(debugFighter, debugBehaviors[0]);
-            enemyControllers[enemy.guid] = enemy;
-            enemy = new EnemyController(debugFighter, debugBehaviors[1]);
-            enemyControllers[enemy.guid] = enemy;
-        }
-
-        private void RemoveController(Guid guid)
-        {
-            if (guid == playerController.guid)
-            {
-                playerController.isControllable = false;
-            }
-            else
-            {
-                enemyControllers.Remove(guid);
-            }
+            FighterEntity.OnDestroy += DoOnFighterDestroy;
+            playerController = new PlayerController(configs.player, configs.playerPosition);
+            _stages = configs.stages;
+            remainingEnemies = _stages[currentStage].waves[currentWave].fighters.Length;
         }
 
         public void Update(float delta)
@@ -71,6 +34,180 @@ namespace GamePlay.Controllers
             {
                 enemy.Update(delta);
             }
+            
+            if (currentStage >= _stages.Length)
+            {
+                return;
+            }
+            
+            Spawn(delta);
+            
+            /*var stage = _stages[currentStage];
+            if (waveCd > 0f)
+            {
+                waveCd -= delta;
+                if (waveCd > 0f)
+                {
+                    return;
+                }
+
+                currentWave++;
+                if (currentWave < stage.waves.Length)
+                {
+                    remainingEnemies = stage.waves[currentWave].fighters.Length;
+                }
+
+                return;
+            }
+            
+            if (remainingEnemies == 0)
+            {
+                waveCd = stage.intervals[currentWave];
+                if (waveCd <= 0f)
+                {
+                    currentWave++;
+                    
+                }
+                if (currentWave >= stage.waves.Length)
+                {
+                    Debug.Log($"stage {currentStage} cleared");
+                    currentStage++;
+                    currentWave = 0;
+                    if (currentStage >= _stages.Length)
+                    {
+                        Debug.Log("all stages cleared");
+                        return;
+                    }
+
+                    stage = _stages[currentStage];
+                }
+                remainingEnemies = stage.waves[currentWave].fighters.Length;
+            }
+            
+            if (enemyCd > 0f)
+            {
+                enemyCd -= delta;
+                if (enemyCd <= 0f)
+                {
+                    currentEnemy++;
+                }
+
+                return;
+            }
+            
+            var wave = stage.waves[currentWave];
+            if (currentEnemy >= wave.fighters.Length)
+            {
+                return;
+            }
+
+            var enemyController = new EnemyController(
+                wave.fighters[currentEnemy],
+                wave.behaviors[currentEnemy]);
+            enemyControllers[enemyController.guid] = enemyController;
+            enemyCd = wave.intervals[currentEnemy];
+            if (enemyCd <= 0f)
+            {
+                currentEnemy++;
+            }*/
+        }
+
+        private void Spawn(float delta)
+        {
+            if (currentStage >= _stages.Length)
+            {
+                return;
+            }
+            var stage = _stages[currentStage];
+            
+            switch (spawnState)
+            {
+                case SpawnState.WaveReady:
+                    currentEnemy = 0;
+                    remainingEnemies = 0;
+                    if (currentWave < stage.waves.Length)
+                    {
+                        remainingEnemies = stage.waves[currentWave].fighters.Length;
+                    }
+                    spawnState = remainingEnemies > 0 ? SpawnState.EnemyReady : SpawnState.Idle;
+                    break;
+                case SpawnState.EnemyReady:
+                    var wave = stage.waves[currentWave];
+                    var enemyController = new EnemyController(
+                        wave.fighters[currentEnemy],
+                        wave.behaviors[currentEnemy]);
+                    enemyControllers[enemyController.guid] = enemyController;
+                    enemyCd = wave.intervals[currentEnemy];
+                    spawnState = SpawnState.EnemyWaiting;
+                    break;
+                case SpawnState.EnemyWaiting:
+                    if (enemyCd > 0f)
+                    {
+                        enemyCd -= delta;
+                    }
+                    else
+                    {
+                        currentEnemy++;
+                        spawnState = currentEnemy < stage.waves[currentWave].fighters.Length ? SpawnState.EnemyReady : SpawnState.Idle;
+                    }
+                    break;
+                case SpawnState.Idle:
+                    if (remainingEnemies <= 0)
+                    {
+                        waveCd = stage.intervals[currentWave];
+                        spawnState = SpawnState.WaveWaiting;
+                    }
+                    break;
+                case SpawnState.WaveWaiting:
+                    if (waveCd > 0f)
+                    {
+                        waveCd -= delta;
+                    }
+                    else
+                    {
+                        currentWave++;
+                        spawnState = SpawnState.WaveReady;
+                        if (currentWave >= stage.waves.Length)
+                        {
+                            Debug.Log($"stage {currentStage} cleared");
+                            currentStage++;
+                            currentWave = 0;
+                            if (currentStage >= _stages.Length)
+                            {
+                                Debug.Log("all stages cleared");
+                                spawnState = SpawnState.End;
+                            }
+                        }
+                    }
+                    break;
+                case SpawnState.End:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+        }
+        
+        private void DoOnFighterDestroy(Guid guid)
+        {
+            if (guid == playerController.guid)
+            {
+                playerController.isControllable = false;
+            }
+            else if (enemyControllers.Remove(guid))
+            {
+                remainingEnemies--;
+            }
+        }
+
+        public enum SpawnState
+        {
+            WaveReady,
+            EnemyReady,
+            EnemyWaiting,
+            Idle,
+            WaveWaiting,
+            End
         }
     }
 }

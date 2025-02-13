@@ -14,11 +14,17 @@ namespace GamePlay.Entities
         public static QueryFighterDelegate QueryFighter;
         
         private Trigger2D _bulletObject;
-        public Bullet config;
+        private readonly Bullet _config;
+        
         public Guid guid;
         public int team;
         public Vector2 position;
         public Vector2 direction;
+
+        public BulletEntity(Bullet config)
+        {
+            _config = config;
+        }
 
         public void Init(Trigger2D bulletObject)
         {
@@ -32,7 +38,7 @@ namespace GamePlay.Entities
 
         public void Update(float delta)
         {
-            position += direction * (config.speed * delta);
+            position += direction * (_config.speed * delta);
             _bulletObject.transform.position = position;
         }
 
@@ -55,14 +61,15 @@ namespace GamePlay.Entities
                 return;
             }
 
-            fighter.TakeDamage(config.damage);
+            var killed = fighter.TakeDamage(_config.damage);
+            // TODO: bullet {guid} from team {team} killed fighter {fighter.guid} from team {fighter.team}
             Destroy();
         }
 
         private void Destroy()
         {
             _bulletObject.OnTriggerEnter2DHandler -= OnTriggerEnter2D;
-            Pool<Trigger2D>.Collect(config.name, _bulletObject);
+            Pool<Trigger2D>.Collect(_config.name, _bulletObject);
             _bulletObject = null;
             OnDestroy?.Invoke(guid);
         }

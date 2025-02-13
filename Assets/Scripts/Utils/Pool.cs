@@ -113,6 +113,10 @@ namespace Utils
 
             public void Collect(T obj)
             {
+                if (!obj)
+                {
+                    Debug.Log(1);
+                }
                 obj.gameObject.SetActive(false);
                 _container.Push(obj);
             }

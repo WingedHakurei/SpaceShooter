@@ -12,16 +12,15 @@ namespace GamePlay.Controllers
         private readonly Behavior _behavior;
         public Guid guid;
         public int currentCommand;
-        public bool isProcessing;
         public float cd;
+        public EnemyState enemyState;
 
         public EnemyController(Fighter config, Behavior behavior)
         {
             _behavior = behavior;
             guid = Guid.NewGuid();
-            _fighter = new FighterEntity
+            _fighter = new FighterEntity(config)
             {
-                config = config,
                 team = 2,
                 guid = guid,
                 position = _behavior.startPosition,
@@ -38,66 +37,67 @@ namespace GamePlay.Controllers
             {
                 return;
             }
-
-            if (cd > 0f)
-            {
-                cd -= delta;
-                if (cd <= 0f)
-                {
-                    currentCommand = _behavior.nextIndices[currentCommand];
-                }
-                return;
-            }
-
+            
             if (currentCommand == -1)
             {
                 return;
             }
             
             var command = _behavior.commands[currentCommand];
-            if (isProcessing)
+
+            switch (enemyState)
             {
-                if (command.type == CommandType.Move)
-                {
-                    if (_fighter.position == _fighter.targetPosition)
+                case EnemyState.Ready:
+                    switch (command.type)
                     {
-                        isProcessing = false;
+                        case CommandType.None:
+                            break;
+                        case CommandType.Move:
+                            _fighter.targetPosition = command.position;
+                            break;
+                        case CommandType.Attack:
+                            _fighter.Attack();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
-                }
-                else
-                {
-                    isProcessing = false;
-                }
 
-                if (isProcessing)
-                {
-                    return;
-                }
+                    enemyState = EnemyState.Processing;
+                    break;
+                case EnemyState.Processing:
+                    if (command.type != CommandType.Move || _fighter.position == _fighter.targetPosition)
+                    {
+                        cd = _behavior.intervals[currentCommand];
+                        enemyState = EnemyState.Waiting;
+                    }
+                    break;
+                case EnemyState.Waiting:
+                    if (cd > 0f)
+                    {
+                        cd -= delta;
+                    }
+                    else
+                    {
+                        currentCommand = _behavior.nexts[currentCommand];
+                        enemyState = currentCommand >= 0 && currentCommand < _behavior.commands.Length
+                            ? EnemyState.Ready
+                            : EnemyState.End;
+                    }
 
-                cd = _behavior.intervals[currentCommand];
-                if (cd <= 0f)
-                {
-                    currentCommand = _behavior.nextIndices[currentCommand];
-                }
+                    break;
+                case EnemyState.End:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            else
-            {
-                switch (command.type)
-                {
-                    case CommandType.None:
-                        break;
-                    case CommandType.Move:
-                        _fighter.targetPosition = command.position;
-                        break;
-                    case CommandType.Attack:
-                        _fighter.Attack();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+        }
 
-                isProcessing = true;
-            }
+        public enum EnemyState
+        {
+            Ready,
+            Processing,
+            Waiting,
+            End
         }
     }
 }
