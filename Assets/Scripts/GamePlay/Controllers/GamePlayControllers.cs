@@ -35,11 +35,6 @@ namespace GamePlay.Controllers
                 enemy.Update(delta);
             }
             
-            if (currentStage >= _stages.Length)
-            {
-                return;
-            }
-            
             Spawn(delta);
             
             /*var stage = _stages[currentStage];
@@ -169,12 +164,12 @@ namespace GamePlay.Controllers
                         spawnState = SpawnState.WaveReady;
                         if (currentWave >= stage.waves.Length)
                         {
-                            Debug.Log($"stage {currentStage} cleared");
+                            // stage {currentStage} cleared
                             currentStage++;
                             currentWave = 0;
                             if (currentStage >= _stages.Length)
                             {
-                                Debug.Log("all stages cleared");
+                                // all stages cleared
                                 spawnState = SpawnState.End;
                             }
                         }
