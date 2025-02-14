@@ -1,4 +1,4 @@
-﻿local configs = {
+local configs = {
     bullets = {
         {
             name = "DefaultBullet",
@@ -171,8 +171,8 @@
             intervals = { 5.0, 0.0 }
         }
     },
-    player = 0,
-    playerPosition = { -4.0, 0.0 },
+    player = "DefaultFighter",
+    playerPosition = { 0.0, -4.0 },
 }
 
 return configs

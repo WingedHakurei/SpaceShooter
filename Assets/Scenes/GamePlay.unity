@@ -778,7 +778,7 @@ MonoBehaviour:
   _debugPrefabs:
   - {fileID: 2345856856419617796, guid: b90bdb236d9cf4945b803df4166d5141, type: 3}
   - {fileID: 4547201744845114121, guid: f69d63cb370ba3d43bbd6502f9fabc14, type: 3}
-  _debugStartPosition: {fileID: 2089274124}
+  _debugConfigsPath: GamePlay/GamePlayConfigs
 --- !u!4 &1168377237
 Transform:
   m_ObjectHideFlags: 0
@@ -963,37 +963,6 @@ Transform:
   - {fileID: 674587700}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2089274123
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2089274124}
-  m_Layer: 0
-  m_Name: DebugStartPosition
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2089274124
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2089274123}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -4, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1001,5 +970,4 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 1168377237}
-  - {fileID: 2089274124}
   - {fileID: 2072528197}

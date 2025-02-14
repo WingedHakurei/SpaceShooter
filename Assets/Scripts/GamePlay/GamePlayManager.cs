@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using GamePlay.Configs;
 using GamePlay.Controllers;
 using GamePlay.Entities;
 using UnityEngine;
+using UnityEngine.Networking;
 using Utils;
+using XLua;
 
 namespace GamePlay
 {
@@ -15,168 +19,52 @@ namespace GamePlay
         private GamePlayConfigs _configs;
         private GamePlayEntities _entities;
         private GamePlayControllers _controllers;
-        private int _gameSpeed = 0;
-        private float _gameTime = 0;
+        private int _gameSpeed;
+        private float _gameTime;
         private const int MaxGameSpeed = 5;
+        
+        private LuaEnv _luaEnv;
         
         [SerializeField, Range(0, MaxGameSpeed)] private int _debugGameSpeed;
         [SerializeField] private string[] _debugPrefabNames;
         [SerializeField] private Trigger2D[] _debugPrefabs;
-        [SerializeField] private Transform _debugStartPosition;
+        [SerializeField] private string _debugConfigsPath;
 
-        private void Start()
+        private async void Start()
         {
+            var destroyToken = this.GetCancellationTokenOnDestroy();
+            _luaEnv = new LuaEnv();
             Pool<Trigger2D>.Instance = new Pool<Trigger2D>(_debugPrefabNames, _debugPrefabs);
-            
-            _configs = LoadConfigs();
+
+            var fullConfigPath = Path.Combine(Application.streamingAssetsPath, _debugConfigsPath + ".lua.txt");
+            var (configs, loadSuccess) = await LoadConfigsAsync(fullConfigPath, destroyToken);
+            if (!loadSuccess)
+            {
+                #if UNITY_EDITOR
+                Debug.LogError("Load configs failed");
+                #else
+                Application.Quit();
+                #endif
+            }
+            _configs = configs;
 
             _entities = new GamePlayEntities();
             _controllers = new GamePlayControllers(_configs);
             
         }
 
-        private GamePlayConfigs LoadConfigs()
+        private async UniTask<(GamePlayConfigs, bool)> LoadConfigsAsync(string path, CancellationToken token = default)
         {
-            #region debug game play configs
-            var configs = new GamePlayConfigs
+            var request = await UnityWebRequest.Get(path).SendWebRequest().WithCancellation(token);
+            if (request.result != UnityWebRequest.Result.Success)
             {
-                playerPosition = _debugStartPosition.position,
-                bullets = new Bullet[]
-                {
-                    new ()
-                    {
-                        name = "DefaultBullet",
-                        damage = 10, 
-                        speed = 10f
-                    }
-                },
-                behaviors = new Behavior[]
-                {
-                    new ()
-                    {
-                        startPosition = new Vector2(-7f, 3.5f),
-                        commands = new Command[]
-                        {
-                            new() { type = CommandType.Move, position = new Vector2(0f, 0f), next = 1 },
-                            new() { type = CommandType.Move, position = new Vector2(7f, 3.5f), next = 2 },
-                            new() { type = CommandType.Move, position = new Vector2(-7f, 3.5f), next = 0 },
-                        }
-                    },
-                    new ()
-                    {
-                        startPosition = new Vector2(-7f, -3.5f),
-                        commands = new Command[]
-                        {
-                            new() { type = CommandType.Move, position = new Vector2(0f, 0f), next = 1 },
-                            new() { type = CommandType.Move, position = new Vector2(7f, -3.5f), next = 2 },
-                            new() { type = CommandType.Move, position = new Vector2(-7f, -3.5f), next = 0 },
-                        },
-                    },
-                    new ()
-                    {
-                        startPosition = new Vector2(-7f, 3.5f),
-                        commands = new Command[]
-                        {
-                            new() { type = CommandType.None, cd = 1f, next = 1 },
-                            new() { type = CommandType.Move, position = new Vector2(0f, 0f), next = 2  },
-                            new() { type = CommandType.Attack, cd = 2f, next = 3  },
-                            new() { type = CommandType.Attack, cd = 1f, next = 4  },
-                            new() { type = CommandType.Move, position = new Vector2(70f, 35f), next = -1 },
-                        }
-                    },
-                    new ()
-                    {
-                        startPosition = new Vector2(0f, 3.5f),
-                        commands = new Command[]
-                        {
-                            new() { type = CommandType.Move, position = new Vector2(0f, -3.5f), next = 1 },
-                            new() { type = CommandType.Attack, next = 2 },
-                            new() { type = CommandType.Move, position = new Vector2(0f, 3.5f), next = 3 },
-                            new() { type = CommandType.Attack, next = 0 },
-                        }
-                    }
-                }
-            };
-            configs.weapons = new Weapon[]
-            {
-                new()
-                {
-                    name = "LeftWeapon",
-                    bullet = configs.bullets[0],
-                    count = 3,
-                    angle = 180f,
-                    shape = Weapon.Shape.Sector,
-                    shapeRange = 30f,
-                    cd = 1f
-                },
-                new()
-                {
-                    name = "RightWeapon",
-                    bullet = configs.bullets[0],
-                    count = 3,
-                    angle = 0f,
-                    shape = Weapon.Shape.Sector,
-                    shapeRange = 30f,
-                    cd = 1f
-                },
-                new()
-                {
-                    name = "ForwardWeapon",
-                    bullet = configs.bullets[0],
-                    count = 5,
-                    angle = 90f,
-                    shape = Weapon.Shape.Parallel,
-                    shapeRange = 2f,
-                    cd = 0.2f
-                }
-            };
-            configs.fighters = new Fighter[]
-            {
-                new()
-                {
-                    name = "DefaultFighter",
-                    speed = 5f,
-                    hp = 100,
-                    weapons = new[]
-                    {
-                        configs.weapons[0],
-                        configs.weapons[1],
-                        configs.weapons[2],
-                    }
-                }
-            };
-            configs.waves = new Wave[]
-            {
-                new()
-                {
-                    fighters = new[] { configs.fighters[0], configs.fighters[0], configs.fighters[0] },
-                    behaviors = new[] { configs.behaviors[0], configs.behaviors[1], configs.behaviors[2] },
-                    intervals = new[] { 0f, 1f, 0f }
-                },
-                new()
-                {
-                    fighters = new[] { configs.fighters[0], configs.fighters[0] },
-                    behaviors = new[] { configs.behaviors[2], configs.behaviors[3] },
-                    intervals = new[] { 1f, 0f }
-                }
-            };
-            configs.stages = new Stage[]
-            {
-                new()
-                {
-                    waves = new[] { configs.waves[0] },
-                    intervals = new[] { 0f }
-                },
-                new()
-                {
-                    waves = new[] { configs.waves[0], configs.waves[1] },
-                    intervals = new[] { 5f, 0f }
-                }
-            };
-            configs.player = configs.fighters[0];
-            #endregion
+                return (null, false);
+            }
+            var luaData = request.downloadHandler.data;
+            var luaConfigs = _luaEnv.DoString(luaData)[0] as LuaTable;
+            var configs = new GamePlayConfigs(luaConfigs);
 
-            return configs;
+            return (configs, true);
         }
 
         private void Update()
@@ -201,6 +89,7 @@ namespace GamePlay
         private void OnDestroy()
         {
             Pool<Trigger2D>.Instance.Dispose();
+            _luaEnv.Dispose();
         }
     }
 }
