@@ -11,9 +11,8 @@ using XLua;
 
 namespace GamePlay
 {
-    // TODO: Load lua configs and parse them to _configs
-    // TODO: Save & Load
     // TODO: xLua Events
+    // TODO: Save & Load
     public class GamePlayManager : MonoBehaviour
     {
         private GamePlayConfigs _configs;
