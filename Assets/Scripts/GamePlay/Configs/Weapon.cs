@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace GamePlay.Configs
+﻿namespace GamePlay.Configs
 {
     public class Weapon
     {

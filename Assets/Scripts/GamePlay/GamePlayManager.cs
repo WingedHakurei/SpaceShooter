@@ -7,7 +7,7 @@ using Utils;
 
 namespace GamePlay
 {
-    // TODO: xLua Game Config
+    // TODO: Load lua configs and parse them to _configs
     // TODO: Save & Load
     // TODO: xLua Events
     public class GamePlayManager : MonoBehaviour
@@ -15,8 +15,11 @@ namespace GamePlay
         private GamePlayConfigs _configs;
         private GamePlayEntities _entities;
         private GamePlayControllers _controllers;
-        [SerializeField, Range(0, GamePlayConfigs.MaxGameSpeed)] 
-        private int _debugGameSpeed;
+        private int _gameSpeed = 0;
+        private float _gameTime = 0;
+        private const int MaxGameSpeed = 5;
+        
+        [SerializeField, Range(0, MaxGameSpeed)] private int _debugGameSpeed;
         [SerializeField] private string[] _debugPrefabNames;
         [SerializeField] private Trigger2D[] _debugPrefabs;
         [SerializeField] private Transform _debugStartPosition;
@@ -25,11 +28,18 @@ namespace GamePlay
         {
             Pool<Trigger2D>.Instance = new Pool<Trigger2D>(_debugPrefabNames, _debugPrefabs);
             
+            _configs = LoadConfigs();
+
+            _entities = new GamePlayEntities();
+            _controllers = new GamePlayControllers(_configs);
+            
+        }
+
+        private GamePlayConfigs LoadConfigs()
+        {
             #region debug game play configs
-            _configs = new GamePlayConfigs
+            var configs = new GamePlayConfigs
             {
-                gameSpeed = 0,
-                gameTime = 0f,
                 playerPosition = _debugStartPosition.position,
                 bullets = new Bullet[]
                 {
@@ -47,60 +57,52 @@ namespace GamePlay
                         startPosition = new Vector2(-7f, 3.5f),
                         commands = new Command[]
                         {
-                            new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
-                            new() { type = CommandType.Move, position = new Vector2(7f, 3.5f) },
-                            new() { type = CommandType.Move, position = new Vector2(-7f, 3.5f) },
-                        },
-                        nexts = new [] { 1, 2, 0 },
-                        intervals = new [] { 0f, 0f, 0f }
+                            new() { type = CommandType.Move, position = new Vector2(0f, 0f), next = 1 },
+                            new() { type = CommandType.Move, position = new Vector2(7f, 3.5f), next = 2 },
+                            new() { type = CommandType.Move, position = new Vector2(-7f, 3.5f), next = 0 },
+                        }
                     },
                     new ()
                     {
                         startPosition = new Vector2(-7f, -3.5f),
                         commands = new Command[]
                         {
-                            new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
-                            new() { type = CommandType.Move, position = new Vector2(7f, -3.5f) },
-                            new() { type = CommandType.Move, position = new Vector2(-7f, -3.5f) },
+                            new() { type = CommandType.Move, position = new Vector2(0f, 0f), next = 1 },
+                            new() { type = CommandType.Move, position = new Vector2(7f, -3.5f), next = 2 },
+                            new() { type = CommandType.Move, position = new Vector2(-7f, -3.5f), next = 0 },
                         },
-                        nexts = new [] { 1, 2, 0 },
-                        intervals = new [] { 0f, 0f, 0f }
                     },
                     new ()
                     {
                         startPosition = new Vector2(-7f, 3.5f),
                         commands = new Command[]
                         {
-                            new() { type = CommandType.None },
-                            new() { type = CommandType.Move, position = new Vector2(0f, 0f) },
-                            new() { type = CommandType.Attack },
-                            new() { type = CommandType.Attack },
-                            new() { type = CommandType.Move, position = new Vector2(70f, 35f) },
-                        },
-                        nexts = new [] { 1, 2, 3, 4, -1 },
-                        intervals = new [] { 1f, 0f, 2f, 1f, 0f }
+                            new() { type = CommandType.None, cd = 1f, next = 1 },
+                            new() { type = CommandType.Move, position = new Vector2(0f, 0f), next = 2  },
+                            new() { type = CommandType.Attack, cd = 2f, next = 3  },
+                            new() { type = CommandType.Attack, cd = 1f, next = 4  },
+                            new() { type = CommandType.Move, position = new Vector2(70f, 35f), next = -1 },
+                        }
                     },
                     new ()
                     {
                         startPosition = new Vector2(0f, 3.5f),
                         commands = new Command[]
                         {
-                            new() { type = CommandType.Move, position = new Vector2(0f, -3.5f) },
-                            new() { type = CommandType.Attack },
-                            new() { type = CommandType.Move, position = new Vector2(0f, 3.5f) },
-                            new() { type = CommandType.Attack },
-                        },
-                        nexts = new [] { 1, 2, 3, 0 },
-                        intervals = new [] { 0f, 0f, 0f, 0f }
+                            new() { type = CommandType.Move, position = new Vector2(0f, -3.5f), next = 1 },
+                            new() { type = CommandType.Attack, next = 2 },
+                            new() { type = CommandType.Move, position = new Vector2(0f, 3.5f), next = 3 },
+                            new() { type = CommandType.Attack, next = 0 },
+                        }
                     }
                 }
             };
-            _configs.weapons = new Weapon[]
+            configs.weapons = new Weapon[]
             {
                 new()
                 {
                     name = "LeftWeapon",
-                    bullet = _configs.bullets[0],
+                    bullet = configs.bullets[0],
                     count = 3,
                     angle = 180f,
                     shape = Weapon.Shape.Sector,
@@ -110,7 +112,7 @@ namespace GamePlay
                 new()
                 {
                     name = "RightWeapon",
-                    bullet = _configs.bullets[0],
+                    bullet = configs.bullets[0],
                     count = 3,
                     angle = 0f,
                     shape = Weapon.Shape.Sector,
@@ -120,7 +122,7 @@ namespace GamePlay
                 new()
                 {
                     name = "ForwardWeapon",
-                    bullet = _configs.bullets[0],
+                    bullet = configs.bullets[0],
                     count = 5,
                     angle = 90f,
                     shape = Weapon.Shape.Parallel,
@@ -128,7 +130,7 @@ namespace GamePlay
                     cd = 0.2f
                 }
             };
-            _configs.fighters = new Fighter[]
+            configs.fighters = new Fighter[]
             {
                 new()
                 {
@@ -137,53 +139,51 @@ namespace GamePlay
                     hp = 100,
                     weapons = new[]
                     {
-                        _configs.weapons[0],
-                        _configs.weapons[1],
-                        _configs.weapons[2],
+                        configs.weapons[0],
+                        configs.weapons[1],
+                        configs.weapons[2],
                     }
                 }
             };
-            _configs.waves = new Wave[]
+            configs.waves = new Wave[]
             {
                 new()
                 {
-                    fighters = new[] { _configs.fighters[0], _configs.fighters[0], _configs.fighters[0] },
-                    behaviors = new[] { _configs.behaviors[0], _configs.behaviors[1], _configs.behaviors[2] },
+                    fighters = new[] { configs.fighters[0], configs.fighters[0], configs.fighters[0] },
+                    behaviors = new[] { configs.behaviors[0], configs.behaviors[1], configs.behaviors[2] },
                     intervals = new[] { 0f, 1f, 0f }
                 },
                 new()
                 {
-                    fighters = new[] { _configs.fighters[0], _configs.fighters[0] },
-                    behaviors = new[] { _configs.behaviors[2], _configs.behaviors[3] },
+                    fighters = new[] { configs.fighters[0], configs.fighters[0] },
+                    behaviors = new[] { configs.behaviors[2], configs.behaviors[3] },
                     intervals = new[] { 1f, 0f }
                 }
             };
-            _configs.stages = new Stage[]
+            configs.stages = new Stage[]
             {
                 new()
                 {
-                    waves = new[] { _configs.waves[0] },
+                    waves = new[] { configs.waves[0] },
                     intervals = new[] { 0f }
                 },
                 new()
                 {
-                    waves = new[] { _configs.waves[0], _configs.waves[1] },
+                    waves = new[] { configs.waves[0], configs.waves[1] },
                     intervals = new[] { 5f, 0f }
                 }
             };
-            _configs.player = _configs.fighters[0];
+            configs.player = configs.fighters[0];
             #endregion
-            
-            _entities = new GamePlayEntities();
-            _controllers = new GamePlayControllers(_configs);
-            
+
+            return configs;
         }
 
         private void Update()
         {
-            _configs.gameSpeed = _debugGameSpeed;
-            var delta = Time.deltaTime * _configs.gameSpeed / GamePlayConfigs.MaxGameSpeed;
-            _configs.gameTime += delta;
+            _gameSpeed = _debugGameSpeed;
+            var delta = Time.deltaTime * _gameSpeed / MaxGameSpeed;
+            _gameTime += delta;
 
             _controllers.Update(delta);
             

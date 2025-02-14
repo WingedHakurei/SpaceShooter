@@ -4,16 +4,13 @@ namespace GamePlay.Configs
 {
     public class GamePlayConfigs
     {
-        public const int MaxGameSpeed = 5;
-        public int gameSpeed;
-        public float gameTime;
+        public Bullet[] bullets;
+        public Weapon[] weapons;
+        public Fighter[] fighters;
+        public Behavior[] behaviors;
+        public Wave[] waves;
+        public Stage[] stages;
         public Fighter player;
         public Vector2 playerPosition;
-        public Fighter[] fighters;
-        public Weapon[] weapons;
-        public Bullet[] bullets;
-        public Stage[] stages;
-        public Wave[] waves;
-        public Behavior[] behaviors;
     }
 }

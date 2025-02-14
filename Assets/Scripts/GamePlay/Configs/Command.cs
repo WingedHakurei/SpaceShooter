@@ -6,6 +6,8 @@ namespace GamePlay.Configs
     {
         public CommandType type;
         public Vector2 position;
+        public float cd;
+        public int next;
     }
     
     public enum CommandType

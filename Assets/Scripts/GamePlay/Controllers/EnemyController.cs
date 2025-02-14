@@ -67,7 +67,7 @@ namespace GamePlay.Controllers
                 case EnemyState.Processing:
                     if (command.type != CommandType.Move || _fighter.position == _fighter.targetPosition)
                     {
-                        cd = _behavior.intervals[currentCommand];
+                        cd = command.cd;
                         enemyState = EnemyState.Waiting;
                     }
                     break;
@@ -78,7 +78,7 @@ namespace GamePlay.Controllers
                     }
                     else
                     {
-                        currentCommand = _behavior.nexts[currentCommand];
+                        currentCommand = command.next;
                         enemyState = currentCommand >= 0 && currentCommand < _behavior.commands.Length
                             ? EnemyState.Ready
                             : EnemyState.End;

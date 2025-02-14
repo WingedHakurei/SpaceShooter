@@ -1,0 +1,178 @@
+﻿local configs = {
+    bullets = {
+        {
+            name = "DefaultBullet",
+            damage = 10,
+            speed = 10.0
+        }
+    },
+    weapons = {
+        {
+            name = "LeftWeapon",
+            bullet = "DefaultBullet",
+            count = 3,
+            angle = 180.0,
+            shape = "Sector",
+            shapeRange = 30.0,
+            cd = 1.0
+        },
+        {
+            name = "RightWeapon",
+            bullet = "DefaultBullet",
+            count = 3,
+            angle = 0.0,
+            shape = "Sector",
+            shapeRange = 30.0,
+            cd = 1.0
+        },
+        {
+            name = "ForwardWeapon",
+            bullet = "DefaultBullet",
+            count = 5,
+            angle = 90.0,
+            shape = "Parallel",
+            shapeRange = 2.0,
+            cd = 0.2
+        }
+    },
+    fighters = {
+        {
+            name = "DefaultFighter",
+            speed = 5.0,
+            hp = 100,
+            weapons = { 
+                "LeftWeapon",
+                "RightWeapon",
+                "ForwardWeapon"
+            }
+        }
+    },
+    behaviors = {
+        {
+            startPosition = { -7.0, 3.5 },
+            commands = {
+                {
+                    type = "Move",
+                    position = { 0.0, 0.0 },
+                    next = 1
+                },
+                {
+                    type = "Move",
+                    position = { 7.0, 3.5 },
+                    next = 2
+                },
+                {
+                    type = "Move",
+                    position = { -7.0, 3.5 },
+                    next = 0
+                },
+            }
+        },
+        {
+            startPosition = { -7.0, -3.5 },
+            commands = {
+                {
+                    type = "Move",
+                    position = { 0.0, 0.0 },
+                    next = 1
+                },
+                {
+                    type = "Move",
+                    position = { 7.0, -3.5 },
+                    next = 2
+                },
+                {
+                    type = "Move",
+                    position = { -7.0, -3.5 },
+                    next = 0
+                },
+            }
+        },
+        {
+            startPosition = { -7.0, 3.5 },
+            commands = {
+                {
+                    type = "None",
+                    cd = 1.0,
+                    next = 1
+                },
+                {
+                    type = "Move",
+                    position = { 0.0, 0.0 },
+                    next = 2
+                },
+                {
+                    type = "Attack",
+                    cd = 2.0,
+                    next = 3
+                },
+                {
+                    type = "Attack",
+                    cd = 1.0,
+                    next = 4
+                },
+                {
+                    type = "Move",
+                    position = { 70.0, 35.0 },
+                    next = -1
+                },
+            }
+        },
+        {
+            startPosition = { 0.0, 3.5 },
+            commands = {
+                {
+                    type = "Move",
+                    position = { 0.0, -3.5 },
+                    next = 1
+                },
+                {
+                    type = "Attack",
+                    next = 2
+                },
+                {
+                    type = "Move",
+                    position = { 0.0, 3.5 },
+                    next = 3
+                },
+                {
+                    type = "Attack",
+                    next = 0
+                },
+            }
+        },
+    },
+    waves = {
+        {
+            fighters = {
+                "DefaultFighter",
+                "DefaultFighter",
+                "DefaultFighter",
+            },
+            behaviors = { 0, 1, 2 },
+            intervals = { 0.0, 1.0, 0.0 }
+        },
+        {
+            fighters = {
+                "DefaultFighter",
+                "DefaultFighter",
+            },
+            behaviors = { 2, 3 },
+            intervals = { 1.0, 0.0 }
+        },
+    },
+    stages = {
+        {
+            waves = { 0 },
+            intervals = { 0.0 }
+        },
+        {
+            waves = { 0, 1 },
+            intervals = { 5.0, 0.0 }
+        }
+    },
+    player = 0,
+    playerPosition = { -4.0, 0.0 },
+}
+
+return configs

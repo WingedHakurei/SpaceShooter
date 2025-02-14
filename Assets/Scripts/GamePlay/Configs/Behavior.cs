@@ -6,7 +6,5 @@ namespace GamePlay.Configs
     {
         public Vector2 startPosition;
         public Command[] commands;
-        public int[] nexts;
-        public float[] intervals;
     }
 }
