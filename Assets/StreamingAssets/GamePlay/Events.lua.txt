@@ -1,4 +1,4 @@
-﻿killEnemyCount = 0
+killEnemyCount = 0
 
 local events = {
     EnemyFighterKilled = {
@@ -7,10 +7,11 @@ local events = {
         end,
         effect = function(fighter)
             killEnemyCount = killEnemyCount + 1
-            fighter.exp = fighter.exp + 1
-            print(fighter.exp)
+            local shotBy = fighter.killedBy.shotBy
+            shotBy.exp = shotBy.exp + 1
+            print("kill counter: " .. killEnemyCount .. ", current exp: " .. shotBy.exp)
             if killEnemyCount == 4 then
-                _G.InvokeAction("KillEnemyBonus")
+                _G.InvokeEvent("KillEnemyBonus", shotBy)
                 killEnemyCount = 0
             end
         end
@@ -18,7 +19,7 @@ local events = {
     KillEnemyBonus = {
         effect = function(fighter)
             fighter.exp = fighter.exp + 10
-            print(fighter.exp)
+            print("got bonus! current exp: " .. fighter.exp)
         end
     }
 }

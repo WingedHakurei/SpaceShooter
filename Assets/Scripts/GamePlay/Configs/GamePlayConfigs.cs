@@ -23,10 +23,9 @@ namespace GamePlay.Configs
         public Dictionary<string, GameAction> actions;
         public Dictionary<string, GameEvent> events;
         #endregion
-
-        // TODO: Gen lua call C# codes
+        
         // TODO: Refactory on lua loading
-        public GamePlayConfigs(LuaTable basicLua)
+        public GamePlayConfigs(LuaTable basicLua, LuaTable luaActions, LuaTable luaEvents)
         {
             var luaBullets = basicLua.Get<LuaTable>(nameof(bullets));
             bullets = new Dictionary<string, Bullet>();
@@ -77,9 +76,18 @@ namespace GamePlay.Configs
             var luaPlayerPosition = basicLua.Get<LuaTable>(nameof(playerPosition));
             playerPosition = new Vector2(luaPlayerPosition.Get<int, float>(1), luaPlayerPosition.Get<int, float>(2));
             
-            // TODO: Load lua actions & events
             actions = new Dictionary<string, GameAction>();
+            foreach (var key in luaActions.GetKeys<string>())
+            {
+                var gameAction = new GameAction(luaActions.Get<LuaTable>(key));
+                actions[key] = gameAction;
+            }
             events = new Dictionary<string, GameEvent>();
+            foreach (var key in luaEvents.GetKeys<string>())
+            {
+                var gameEvent = new GameEvent(luaEvents.Get<LuaTable>(key));
+                events[key] = gameEvent;
+            }
         }
     }
 }

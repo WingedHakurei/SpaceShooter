@@ -62,6 +62,7 @@ namespace GamePlay.Entities
             var killed = fighter.TakeDamage(Runtime.config.damage);
             if (killed)
             {
+                fighter.Runtime.killedBy = Runtime;
                 InvokeAction?.Invoke("OnFighterKilled", fighter.Runtime);
             }
             Destroy();

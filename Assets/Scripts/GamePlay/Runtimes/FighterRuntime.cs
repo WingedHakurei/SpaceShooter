@@ -14,5 +14,6 @@ namespace GamePlay.Runtimes
         public float[] cds;
         public int curHp;
         public int exp;
+        public BulletRuntime killedBy;
     }
 }

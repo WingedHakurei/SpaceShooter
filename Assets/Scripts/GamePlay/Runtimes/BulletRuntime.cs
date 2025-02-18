@@ -11,5 +11,6 @@ namespace GamePlay.Runtimes
         public int team;
         public Vector2 position;
         public Vector2 direction;
+        public FighterRuntime shotBy;
     }
 }

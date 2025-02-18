@@ -778,7 +778,9 @@ MonoBehaviour:
   _debugPrefabs:
   - {fileID: 2345856856419617796, guid: b90bdb236d9cf4945b803df4166d5141, type: 3}
   - {fileID: 4547201744845114121, guid: f69d63cb370ba3d43bbd6502f9fabc14, type: 3}
-  _debugConfigsPath: GamePlay/GamePlayConfigs
+  _debugBasicConfigsPath: GamePlay/GamePlayConfigs
+  _debugActionsPath: GamePlay/Actions
+  _debugEventsPath: GamePlay/Events
 --- !u!4 &1168377237
 Transform:
   m_ObjectHideFlags: 0

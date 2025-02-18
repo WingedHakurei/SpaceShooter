@@ -1,4 +1,4 @@
-﻿local actions = {
+local actions = {
     OnFighterKilled = {
         events = {
             "EnemyFighterKilled"

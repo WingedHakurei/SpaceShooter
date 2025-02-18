@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using GamePlay.Configs;
 using GamePlay.Entities;
-using UnityEngine;
 
 namespace GamePlay.Controllers
 {
-    public class GamePlayControllers
+    public class GamePlayControllers : IDisposable
     {
         public readonly EventController eventController;
         public readonly PlayerController playerController;
@@ -126,6 +125,11 @@ namespace GamePlay.Controllers
             {
                 remainingEnemies--;
             }
+        }
+
+        public void Dispose()
+        {
+            eventController.Dispose();
         }
 
         public enum SpawnState

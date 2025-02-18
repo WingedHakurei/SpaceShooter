@@ -73,6 +73,7 @@ namespace GamePlay.Entities
                         guid = Guid.NewGuid(),
                         position = Runtime.position,
                         direction = direction,
+                        shotBy = Runtime
                     });
                     bulletEntity.Init(Pool<Trigger2D>.Get(weapon.bullet.name));
                 }
@@ -90,6 +91,7 @@ namespace GamePlay.Entities
                             guid = Guid.NewGuid(),
                             position = bulletPosition,
                             direction = direction,
+                            shotBy = Runtime
                         });
                         bulletEntity.Init(Pool<Trigger2D>.Get(weapon.bullet.name));
                     }
@@ -111,6 +113,7 @@ namespace GamePlay.Entities
                             guid = Guid.NewGuid(),
                             position = Runtime.position,
                             direction = Vector3.Slerp(startDirection, endDirection, j / (float)(weapon.count - 1)),
+                            shotBy = Runtime
                         });
                         bulletEntity.Init(Pool<Trigger2D>.Get(weapon.bullet.name));
                     }
