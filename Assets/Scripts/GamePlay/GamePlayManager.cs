@@ -12,7 +12,7 @@ using XLua;
 namespace GamePlay
 {
     // TODO: xLua Events
-    // TODO: Save & Load
+    // TODO: Asset Bundle
     public class GamePlayManager : MonoBehaviour
     {
         private GamePlayConfigs _configs;

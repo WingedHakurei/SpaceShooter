@@ -14,32 +14,27 @@ namespace GamePlay.Entities
         public static QueryFighterDelegate QueryFighter;
         
         private Trigger2D _bulletObject;
-        private readonly Bullet _config;
-        
-        public Guid guid;
-        public int team;
-        public Vector2 position;
-        public Vector2 direction;
+        public BulletRuntime Runtime { get; }
 
-        public BulletEntity(Bullet config)
+        public BulletEntity(BulletRuntime runtime)
         {
-            _config = config;
+            Runtime = runtime;
         }
 
         public void Init(Trigger2D bulletObject)
         {
             _bulletObject = bulletObject;
-            _bulletObject.transform.position = position;
-            _bulletObject.guid = guid;
+            _bulletObject.transform.position = Runtime.position;
+            _bulletObject.guid = Runtime.guid;
             _bulletObject.OnTriggerEnter2DHandler += OnTriggerEnter2D;
             _bulletObject.gameObject.SetActive(true);
-            OnInitialized?.Invoke(guid, this);
+            OnInitialized?.Invoke(Runtime.guid, this);
         }
 
         public void Update(float delta)
         {
-            position += direction * (_config.speed * delta);
-            _bulletObject.transform.position = position;
+            Runtime.position += Runtime.direction * (Runtime.config.speed * delta);
+            _bulletObject.transform.position = Runtime.position;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -56,12 +51,12 @@ namespace GamePlay.Entities
                 return;
             }
 
-            if (fighter.team == team)
+            if (fighter.Runtime.team == Runtime.team)
             {
                 return;
             }
 
-            var killed = fighter.TakeDamage(_config.damage);
+            var killed = fighter.TakeDamage(Runtime.config.damage);
             // TODO: bullet {guid} from team {team} killed fighter {fighter.guid} from team {fighter.team}
             Destroy();
         }
@@ -69,9 +64,9 @@ namespace GamePlay.Entities
         private void Destroy()
         {
             _bulletObject.OnTriggerEnter2DHandler -= OnTriggerEnter2D;
-            Pool<Trigger2D>.Collect(_config.name, _bulletObject);
+            Pool<Trigger2D>.Collect(Runtime.config.name, _bulletObject);
             _bulletObject = null;
-            OnDestroy?.Invoke(guid);
+            OnDestroy?.Invoke(Runtime.guid);
         }
 
     }

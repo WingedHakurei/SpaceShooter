@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GamePlay.Events;
 using UnityEngine;
 using Utils;
 using XLua;
@@ -7,6 +8,7 @@ namespace GamePlay.Configs
 {
     public class GamePlayConfigs
     {
+        #region basic
         public Dictionary<string, Bullet> bullets;
         public Dictionary<string, Weapon> weapons;
         public Dictionary<string, Fighter> fighters;
@@ -15,10 +17,11 @@ namespace GamePlay.Configs
         public Stage[] stages;
         public Fighter player;
         public Vector2 playerPosition;
+        #endregion
 
-        public GamePlayConfigs(LuaTable lua)
+        public GamePlayConfigs(LuaTable basicLua)
         {
-            var luaBullets = lua.Get<LuaTable>(nameof(bullets));
+            var luaBullets = basicLua.Get<LuaTable>(nameof(bullets));
             bullets = new Dictionary<string, Bullet>();
             for (var i = 0; i < luaBullets.Length; i++)
             {
@@ -26,7 +29,7 @@ namespace GamePlay.Configs
                 bullets[bullet.name] = bullet;
             }
             
-            var luaWeapons = lua.Get<LuaTable>(nameof(weapons));
+            var luaWeapons = basicLua.Get<LuaTable>(nameof(weapons));
             weapons = new Dictionary<string, Weapon>();
             for (var i = 0; i < luaWeapons.Length; i++)
             {
@@ -34,7 +37,7 @@ namespace GamePlay.Configs
                 weapons[weapon.name] = weapon;
             }
             
-            var luaFighters = lua.Get<LuaTable>(nameof(fighters));
+            var luaFighters = basicLua.Get<LuaTable>(nameof(fighters));
             fighters = new Dictionary<string, Fighter>();
             for (var i = 0; i < luaFighters.Length; i++)
             {
@@ -42,29 +45,29 @@ namespace GamePlay.Configs
                 fighters[fighter.name] = fighter;
             }
             
-            var luaBehaviors = lua.Get<LuaTable>(nameof(behaviors));
+            var luaBehaviors = basicLua.Get<LuaTable>(nameof(behaviors));
             behaviors = new Behavior[luaBehaviors.Length];
             for (var i = 0; i < behaviors.Length; i++)
             {
                 behaviors[i] = new Behavior(luaBehaviors.Get<int, LuaTable>(i + 1));
             }
             
-            var luaWaves = lua.Get<LuaTable>(nameof(waves));
+            var luaWaves = basicLua.Get<LuaTable>(nameof(waves));
             waves = new Wave[luaWaves.Length];
             for (var i = 0; i < waves.Length; i++)
             {
                 waves[i] = new Wave(luaWaves.Get<int, LuaTable>(i + 1), fighters.GetValue, behaviors.GetValue);
             }
             
-            var luaStages = lua.Get<LuaTable>(nameof(stages));
+            var luaStages = basicLua.Get<LuaTable>(nameof(stages));
             stages = new Stage[luaStages.Length];
             for (var i = 0; i < stages.Length; i++)
             {
                 stages[i] = new Stage(luaStages.Get<int, LuaTable>(i + 1), waves.GetValue);
             }
 
-            player = fighters[lua.Get<string>(nameof(player))];
-            var luaPlayerPosition = lua.Get<LuaTable>(nameof(playerPosition));
+            player = fighters[basicLua.Get<string>(nameof(player))];
+            var luaPlayerPosition = basicLua.Get<LuaTable>(nameof(playerPosition));
             playerPosition = new Vector2(luaPlayerPosition.Get<int, float>(1), luaPlayerPosition.Get<int, float>(2));
         }
     }

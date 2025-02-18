@@ -1,7 +1,7 @@
 ﻿using System;
 using GamePlay.Configs;
 using GamePlay.Entities;
-using UnityEngine;
+using GamePlay.Runtimes;
 using Utils;
 
 namespace GamePlay.Controllers
@@ -19,15 +19,16 @@ namespace GamePlay.Controllers
         {
             _behavior = behavior;
             guid = Guid.NewGuid();
-            _fighter = new FighterEntity(config)
+            _fighter = new FighterEntity(new FighterRuntime
             {
+                config = config,
                 team = 2,
                 guid = guid,
                 position = _behavior.startPosition,
                 targetPosition = _behavior.startPosition,
                 cds = new float[config.weapons.Length],
                 curHp = config.hp
-            };
+            });
             _fighter.Init(Pool<Trigger2D>.Get(config.name));
         }
 
@@ -53,7 +54,7 @@ namespace GamePlay.Controllers
                         case CommandType.None:
                             break;
                         case CommandType.Move:
-                            _fighter.targetPosition = command.position;
+                            _fighter.Runtime.targetPosition = command.position;
                             break;
                         case CommandType.Attack:
                             _fighter.Attack();
@@ -65,7 +66,7 @@ namespace GamePlay.Controllers
                     enemyState = EnemyState.Processing;
                     break;
                 case EnemyState.Processing:
-                    if (command.type != CommandType.Move || _fighter.position == _fighter.targetPosition)
+                    if (command.type != CommandType.Move || _fighter.Runtime.position == _fighter.Runtime.targetPosition)
                     {
                         cd = command.cd;
                         enemyState = EnemyState.Waiting;

@@ -1,6 +1,7 @@
 ﻿using System;
 using GamePlay.Configs;
 using GamePlay.Entities;
+using GamePlay.Runtimes;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utils;
@@ -20,15 +21,16 @@ namespace GamePlay.Controllers
         public PlayerController(Fighter config, Vector2 position)
         {
             guid = Guid.NewGuid();
-            _fighter = new FighterEntity(config)
+            _fighter = new FighterEntity(new FighterRuntime
             {
+                config = config,
                 team = 1,
                 guid = guid,
                 position = position,
                 targetPosition = position,
                 curHp = config.hp,
                 cds = new float[config.weapons.Length]
-            };
+            });
             _fighter.Init(Pool<Trigger2D>.Get(config.name));
             
             _moveAction = InputSystem.actions["Move"];
