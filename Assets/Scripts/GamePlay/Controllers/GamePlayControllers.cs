@@ -8,6 +8,7 @@ namespace GamePlay.Controllers
 {
     public class GamePlayControllers
     {
+        public readonly EventController eventController;
         public readonly PlayerController playerController;
         public readonly Dictionary<Guid, EnemyController> enemyControllers = new();
         private readonly Stage[] _stages;
@@ -22,6 +23,7 @@ namespace GamePlay.Controllers
         public GamePlayControllers(GamePlayConfigs configs)
         {
             FighterEntity.OnDestroy += DoOnFighterDestroy;
+            eventController = new EventController(configs.actions, configs.events);
             playerController = new PlayerController(configs.player, configs.playerPosition);
             _stages = configs.stages;
             remainingEnemies = _stages[currentStage].waves[currentWave].fighters.Length;

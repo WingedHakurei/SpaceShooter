@@ -2,9 +2,9 @@
 using GamePlay.Configs;
 using UnityEngine;
 
-namespace GamePlay.Entities
+namespace GamePlay.Runtimes
 {
-    public class BulletRuntime
+    public class BulletRuntime : RuntimeBase
     {
         public Bullet config;
         public Guid guid;

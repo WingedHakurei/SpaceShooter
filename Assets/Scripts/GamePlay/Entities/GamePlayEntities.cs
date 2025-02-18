@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GamePlay.Runtimes;
 
 namespace GamePlay.Entities
 {
@@ -15,6 +16,14 @@ namespace GamePlay.Entities
             BulletEntity.OnInitialized += bullets.Add;
             BulletEntity.OnDestroy += guid => bullets.Remove(guid);
             BulletEntity.QueryFighter = fighters.TryGetValue;
+        }
+
+        public void SetActionInvoker(Action<string, RuntimeBase> invokeAction)
+        {
+            if (invokeAction != null)
+            {
+                BulletEntity.InvokeAction += invokeAction;
+            }
         }
     }
 }

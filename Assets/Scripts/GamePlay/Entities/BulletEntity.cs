@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GamePlay.Configs;
+using GamePlay.Runtimes;
 using UnityEngine;
 using Utils;
 
@@ -12,6 +13,8 @@ namespace GamePlay.Entities
         public static event Action<Guid> OnDestroy;
         public delegate bool QueryFighterDelegate(Guid guid, out FighterEntity fighter);
         public static QueryFighterDelegate QueryFighter;
+        public static event Action<string, RuntimeBase> InvokeAction;
+
         
         private Trigger2D _bulletObject;
         public BulletRuntime Runtime { get; }
@@ -57,7 +60,10 @@ namespace GamePlay.Entities
             }
 
             var killed = fighter.TakeDamage(Runtime.config.damage);
-            // TODO: bullet {guid} from team {team} killed fighter {fighter.guid} from team {fighter.team}
+            if (killed)
+            {
+                InvokeAction?.Invoke("OnFighterKilled", fighter.Runtime);
+            }
             Destroy();
         }
 

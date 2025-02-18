@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GamePlay.Runtimes
 {
-    public class FighterRuntime
+    public class FighterRuntime : RuntimeBase
     {
         public Fighter config;
         public Guid guid;
@@ -13,5 +13,6 @@ namespace GamePlay.Runtimes
         public Vector2 targetPosition;
         public float[] cds;
         public int curHp;
+        public int exp;
     }
 }

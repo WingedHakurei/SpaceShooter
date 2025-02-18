@@ -1,0 +1,26 @@
+﻿killEnemyCount = 0
+
+local events = {
+    EnemyFighterKilled = {
+        condition = function(fighter)
+            return fighter.team ~= 1 
+        end,
+        effect = function(fighter)
+            killEnemyCount = killEnemyCount + 1
+            fighter.exp = fighter.exp + 1
+            print(fighter.exp)
+            if killEnemyCount == 4 then
+                _G.InvokeAction("KillEnemyBonus")
+                killEnemyCount = 0
+            end
+        end
+    },
+    KillEnemyBonus = {
+        effect = function(fighter)
+            fighter.exp = fighter.exp + 10
+            print(fighter.exp)
+        end
+    }
+}
+
+return events

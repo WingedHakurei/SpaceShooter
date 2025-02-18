@@ -1,0 +1,9 @@
+﻿local actions = {
+    OnFighterKilled = {
+        events = {
+            "EnemyFighterKilled"
+        }
+    }
+}
+
+return actions

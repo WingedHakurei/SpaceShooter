@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GamePlay.Configs;
 using GamePlay.Controllers;
 using GamePlay.Entities;
+using GamePlay.Runtimes;
 using UnityEngine;
 using UnityEngine.Networking;
 using Utils;
@@ -11,7 +13,6 @@ using XLua;
 
 namespace GamePlay
 {
-    // TODO: xLua Events
     // TODO: Asset Bundle
     public class GamePlayManager : MonoBehaviour
     {
@@ -49,7 +50,8 @@ namespace GamePlay
 
             _entities = new GamePlayEntities();
             _controllers = new GamePlayControllers(_configs);
-            
+            _entities.SetActionInvoker(_controllers.eventController.InvokeAction);
+            _luaEnv.Global.Set<string, Action<string, RuntimeBase>>("InvokeAction", _controllers.eventController.InvokeAction);
         }
 
         private async UniTask<(GamePlayConfigs, bool)> LoadConfigsAsync(string path, CancellationToken token = default)

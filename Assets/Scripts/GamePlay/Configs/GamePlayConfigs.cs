@@ -18,7 +18,14 @@ namespace GamePlay.Configs
         public Fighter player;
         public Vector2 playerPosition;
         #endregion
+        
+        #region events
+        public Dictionary<string, GameAction> actions;
+        public Dictionary<string, GameEvent> events;
+        #endregion
 
+        // TODO: Gen lua call C# codes
+        // TODO: Refactory on lua loading
         public GamePlayConfigs(LuaTable basicLua)
         {
             var luaBullets = basicLua.Get<LuaTable>(nameof(bullets));
@@ -69,6 +76,10 @@ namespace GamePlay.Configs
             player = fighters[basicLua.Get<string>(nameof(player))];
             var luaPlayerPosition = basicLua.Get<LuaTable>(nameof(playerPosition));
             playerPosition = new Vector2(luaPlayerPosition.Get<int, float>(1), luaPlayerPosition.Get<int, float>(2));
+            
+            // TODO: Load lua actions & events
+            actions = new Dictionary<string, GameAction>();
+            events = new Dictionary<string, GameEvent>();
         }
     }
 }
