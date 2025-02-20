@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: GamePlay
+  m_EditorClassIdentifier: 
+  m_GroupName: GamePlay
+  m_GUID: a8e0e860d10b6d843935f824571f3048
+  m_SerializeEntries:
+  - m_GUID: 234f327228014d03ae320b6f1b3f692a
+    m_Address: GamePlay/LuaScripts/Configs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8f1e220f4b04e5a9683e132924e152f
+    m_Address: GamePlay/LuaScripts/Actions
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b90bdb236d9cf4945b803df4166d5141
+    m_Address: GamePlay/Prefabs/DefaultFighter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6dc7444d5164fbe8dc3add58ea2eecd
+    m_Address: GamePlay/LuaScripts/Events
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f69d63cb370ba3d43bbd6502f9fabc14
+    m_Address: GamePlay/Prefabs/DefaultBullet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 824f40bf3cb4b434082210f8a9f1d6ec, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2aec63bf68a9bb24ba684873dd73df66, type: 2}
+    - {fileID: 11400000, guid: ca7496bf49fb80e4ea2421c45af2ea3f, type: 2}

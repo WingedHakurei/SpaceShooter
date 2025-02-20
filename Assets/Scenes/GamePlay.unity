@@ -772,15 +772,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _debugGameSpeed: 5
-  _debugPrefabNames:
-  - DefaultFighter
-  - DefaultBullet
-  _debugPrefabs:
-  - {fileID: 2345856856419617796, guid: b90bdb236d9cf4945b803df4166d5141, type: 3}
-  - {fileID: 4547201744845114121, guid: f69d63cb370ba3d43bbd6502f9fabc14, type: 3}
-  _debugBasicConfigsPath: GamePlay/GamePlayConfigs
-  _debugActionsPath: GamePlay/Actions
-  _debugEventsPath: GamePlay/Events
+  _prefabRefs:
+  - m_AssetGUID: f69d63cb370ba3d43bbd6502f9fabc14
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: b90bdb236d9cf4945b803df4166d5141
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  _configsRef:
+    m_AssetGUID: 234f327228014d03ae320b6f1b3f692a
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  _actionsRef:
+    m_AssetGUID: a8f1e220f4b04e5a9683e132924e152f
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  _eventsRef:
+    m_AssetGUID: e6dc7444d5164fbe8dc3add58ea2eecd
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
 --- !u!4 &1168377237
 Transform:
   m_ObjectHideFlags: 0

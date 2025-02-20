@@ -10,12 +10,11 @@ namespace Utils
         public static Pool<T> Instance;
         private readonly Dictionary<string, SinglePool> _pools = new();
 
-        public Pool(string[] names, T[] prefabs)
+        public Pool(T[] prefabs)
         {
-            for (var i = 0; i < prefabs.Length; i++)
+            foreach (var prefab in prefabs)
             {
-                var key = i < names.Length ? names[i] : prefabs[i].name;
-                _pools[key] = new SinglePool(prefabs[i]);
+                _pools[prefab.name] = new SinglePool(prefab);
             }
         }
 
