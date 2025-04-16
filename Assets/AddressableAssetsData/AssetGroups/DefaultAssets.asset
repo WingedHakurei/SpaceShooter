@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: DefaultAssets
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: ab1ea4f09eea646488cb4e91ed8bcf1d
-  m_SerializeEntries: []
+  m_GroupName: DefaultAssets
+  m_GUID: d9a5c82df9b771442b62ec11d85706e0
+  m_SerializeEntries:
+  - m_GUID: a97c105638bdf8b4a8650670310a4cd3
+    m_Address: Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Lit-Default.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 824f40bf3cb4b434082210f8a9f1d6ec, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 331410e7bf816b044a7c4eadcd28428d, type: 2}
-    - {fileID: 11400000, guid: 26142432c02bdd6448782a02b358749a, type: 2}
+    - {fileID: 11400000, guid: d2342e85c5f831e43bbb6b2b4f1bac84, type: 2}
+    - {fileID: 11400000, guid: 58b22b0dd4974bb4e87342e303080f20, type: 2}

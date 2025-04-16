@@ -10,28 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: GamePlay
+  m_Name: GamePlay-Prefabs
   m_EditorClassIdentifier: 
-  m_GroupName: GamePlay
+  m_GroupName: GamePlay-Prefabs
   m_GUID: a8e0e860d10b6d843935f824571f3048
   m_SerializeEntries:
-  - m_GUID: 234f327228014d03ae320b6f1b3f692a
-    m_Address: GamePlay/LuaScripts/Configs
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a8f1e220f4b04e5a9683e132924e152f
-    m_Address: GamePlay/LuaScripts/Actions
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b90bdb236d9cf4945b803df4166d5141
     m_Address: GamePlay/Prefabs/DefaultFighter
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e6dc7444d5164fbe8dc3add58ea2eecd
-    m_Address: GamePlay/LuaScripts/Events
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

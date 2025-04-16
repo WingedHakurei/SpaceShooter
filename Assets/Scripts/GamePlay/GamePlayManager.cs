@@ -63,6 +63,10 @@ namespace GamePlay
             var basicLua = basicLuaText ? _luaEnv.DoString(basicLuaText.bytes)[0] as LuaTable : null;
             var luaActions = luaActionsText ? _luaEnv.DoString(luaActionsText.bytes)[0] as LuaTable : null;
             var luaEvents = luaEventsText ? _luaEnv.DoString(luaEventsText.bytes)[0] as LuaTable : null;
+            
+            Addressables.Release(basicLuaText);
+            Addressables.Release(luaActionsText);
+            Addressables.Release(luaEventsText);
 
             return new GamePlayConfigs(basicLua, luaActions, luaEvents);
         }
